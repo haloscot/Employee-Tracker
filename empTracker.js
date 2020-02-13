@@ -3,7 +3,7 @@ var inquirer=require("inquirer");
 
 var connection = mysql.createConnection({
     host: "localhost",
-    port: 3300,
+    port: 3306,
     user: "root",
     password: "",
     database: "employee_tracker_db"
@@ -23,15 +23,39 @@ var connection = mysql.createConnection({
           type: "list",
           message: "What would you like to do?",
           name : "userChoice",
-          choices:["Show all employee roles","View all departments","View all roles","Add an employee","Add a department","Add new role","update employee details",]
+          choices:["View all employees","View all departments","View all employee roles","Add an employee","Add a department","Add an employee role","Update employee details",]
       }]).then(firstCallback);
-
 
 
   }
 
   function firstCallback(answers){
 
-
-    console.log(answers.userChoice)
+    switch(answers) {
+      case "View all employees":
+        showEmployee();
+        break;
+      case "View all departments":
+        viewDepartments();
+        break;
+      case "View all employee roles":
+        viewRoles();
+        break;
+        case "Add an employee":
+          addEmployee();
+          break;
+        case "Add a department":
+          addDepartments();
+          break;
+        case "Add a new employee role":
+          addRoles();
+          break;
+          case "Update employee details":
+              updateEmployeeDetails();
+              break;
+      default:
+        console.log("Choose an option");
+    }
+    
+ // console.log(answers);
   }
