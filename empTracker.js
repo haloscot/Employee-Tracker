@@ -42,7 +42,7 @@ var connection = mysql.createConnection({
 
     if (answer.userChoice === "View all employees") {
 
-        showEmployee();
+        viewEmployees();
     }
     else if (answer.userChoice === "View all departments") {
 
@@ -67,7 +67,7 @@ var connection = mysql.createConnection({
     else (console.log("Oops!"))
 }
 
-function showEmployee() {
+function viewEmployees() {
 
 
     connection.query('SELECT  * FROM employee;', function (err, res) {
@@ -128,8 +128,8 @@ function addEmployee() {
         function (err, res) {
             if (err) throw err;
 
-            console.log(" Your new employee has been added");
-            showEmployee();
+            console.log(" New employee added!");
+            viewEmployees();
             main();
 
         })
@@ -153,7 +153,7 @@ function addDepartments() {
         function (err, res) {
             if (err) throw err;
 
-            console.log(" Your new department has been added");
+            console.log(" New department added!");
             viewDepartments();
             main();
 
@@ -175,7 +175,7 @@ function addRoles() {
     },
     {
         type: "input",
-        message: "Enter the new role salary:",
+        message: "Enter new role salary:",
         name: "roleSalary"
 
     },{
@@ -194,7 +194,7 @@ function addRoles() {
         function (err, res) {
             if (err) throw err;
 
-            console.log(" Your new role has been added");
+            console.log(" New role added!");
             viewRoles();
             main();
 
