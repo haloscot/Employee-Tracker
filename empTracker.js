@@ -23,7 +23,7 @@ var connection = mysql.createConnection({
           type: "list",
           message: "Choose One:",
           name : "userChoice",
-          choices:["View all employees","View all departments","View all employee roles","Add an employee","Add a department","Add an employee role","Update employee role",]
+          choices:["View all employees","View all departments","View all employee roles","Add an employee","Add a department","Add an employee role","Update employee role","Delete employee from database"]
       }]).then(firstCallback);
 
 
@@ -55,20 +55,25 @@ var connection = mysql.createConnection({
 
         addRoles();
     }
-    else if(answer.userChoise === "Update employee role") {
+    else if(answer.userChoice === "Update employee role") {
 
       viewRoles1();
       updateEmployeeDetails();
-  }
+    }
+    else if(answer.userChoice === "Delete employee from database") {
+
+      deleteEmployee();
+    }
+
     else(console.log("Oops!"))
 }
 
 function viewEmployees() {
   
-  connection.query('SELECT  * FROM employee;', function (err, res) {
+  connection.query('SELECT employee.id, firstName,lastName,title,dep_name FROM employee LEFT JOIN emp_role ON employee.role_id=emp_role.id LEFT JOIN department on emp_role.department_id=department.id;', function (err, res) {
     if (err) throw err;
     for (var i = 0; i < res.length; i++) {
-        console.log("Emp ID: " + res[i].id + "\nName: " + res[i].firstName + " " + res[i].lastName + "\nRole ID: " + res[i].role_id);
+        console.log("\nEmp ID: " + res[i].id + "\nName: " + res[i].firstName + " " + res[i].lastName + "\nTitle: " + res[i].title + "\nDepartment: " + res[i].dep_name);
         console.log("-----------------------------");
     }
     main();
@@ -80,7 +85,7 @@ function viewDepartments() {
   connection.query('SELECT  * FROM department;', function (err, res) {
     if (err) throw err;
     for (var i = 0; i < res.length; i++) {
-        console.log("Dep ID: " + res[i].id + "\nDep Name: " + res[i].dep_name);
+        console.log("\nDep ID: " + res[i].id + "\nDep Name: " + res[i].dep_name);
         console.log("-----------------------------");
     }
     main();
@@ -92,7 +97,7 @@ function viewRoles1() {
   connection.query('SELECT  * FROM emp_role;', function (err, res) {
     if (err) throw err;
     for (var i = 0; i < res.length; i++) {
-      console.log("Role ID: " + res[i].id + "\nTitle: " + res[i].title + "\nSalary: " + res[i].salary + "\nDep ID: " + res[i].department_id);
+      console.log("\nRole ID: " + res[i].id + "\nTitle: " + res[i].title + "\nSalary: " + res[i].salary + "\nDep ID: " + res[i].department_id);
       console.log("-----------------------------");
     }
   })
@@ -103,7 +108,7 @@ function viewRoles() {
   connection.query('SELECT  * FROM emp_role;', function (err, res) {
     if (err) throw err;
     for (var i = 0; i < res.length; i++) {
-      console.log("Role ID: " + res[i].id + "\nTitle: " + res[i].title + "\nSalary: " + res[i].salary + "\nDep ID: " + res[i].department_id);
+      console.log("\nRole ID: " + res[i].id + "\nTitle: " + res[i].title + "\nSalary: " + res[i].salary + "\nDep ID: " + res[i].department_id);
       console.log("-----------------------------");
     }
     main();
@@ -212,15 +217,10 @@ function updateEmployeeDetails() {
         name: "roleId"
     }, {
         type: "input",
-        message: "Enter employee fisrt name:",
-        name: "empFName"
+        message: "Enter employee ID",
+        name: "empID"
 
-    }, {
-        type: "input",
-        message: "Enter employee last name:",
-        name: "empLName"
-    }
-
+    }, 
     ]).then(function (answer) {
       connection.query("UPDATE employee SET ? WHERE ?",
         [
@@ -228,14 +228,41 @@ function updateEmployeeDetails() {
             role_id: answer.roleId
           },
           {
-            firstName: answer.empFName
-            // lastName : answer.empLName
+            id: answer.empID
+            
           }
         ], function (err, res) {
             if (err) throw err;
-            console.log(" Your employee role has been added");
-            showEmployee();
+            console.log(" New employee role updated!");
+            viewEmployees();
             main();
           })
       })
 }
+
+function deleteEmployee(){
+
+  inquirer.
+  prompt([{
+      type: "input",
+      message: "Enter the employee ID to delete",
+      name: "empID"
+  }
+  ]).then(function (answer) {
+
+      connection.query("DELETE FROM employee WHERE ?;",
+          {
+             id:answer.empID
+          },
+          function (err, res) {
+              if (err) throw err;
+
+              console.log(" Employee deleted!");
+              viewEmployees();
+
+          })
+
+
+  })
+
+} 
